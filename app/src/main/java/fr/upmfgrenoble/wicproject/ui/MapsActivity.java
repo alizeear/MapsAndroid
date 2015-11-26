@@ -3,6 +3,8 @@ package fr.upmfgrenoble.wicproject.ui;
 import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Display;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -40,6 +42,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
 
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -60,22 +63,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
+        // Récupération de la taille de l'écran
+        // Peut-être déprécié
+        Display d = getWindowManager().getDefaultDisplay();
+        DisplayMetrics m = new DisplayMetrics();
+        d.getMetrics(m);
+
+        // Le marker pointé sur Grenoble
         LatLng grenoble = new LatLng(45.1842207, 5.6805231);
 
         mMap.addMarker(new MarkerOptions().position(grenoble).title("Marker in grenoble"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(grenoble));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(gpx.getLatLngBounds(), 2));
+        //mMap.moveCamera(CameraUpdateFactory.newLatLng(grenoble));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(gpx.getLatLngBounds(), m.widthPixels, m.heightPixels, 30));
 
         showTrack();
-
     }
 
     /* on charge la structure gpx pour l'afficher sur la carte */
     public void showTrack(){
 
         for(GPX.Track t:gpx){
-
             Polyline line = mMap.addPolyline(new PolylineOptions());
             List<LatLng> latLngList = new ArrayList<LatLng>();
 
@@ -87,7 +94,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             line.setPoints(latLngList);
             line.setWidth(5);
-            //line.setColor(Color.rgb((int)Math.round(Math.random() * 255), (int)Math.round(Math.random() * 255), (int)Math.round(Math.random() * 255)));
             line.setColor(Color.RED);
         }
 
