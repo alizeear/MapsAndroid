@@ -1,29 +1,41 @@
 package fr.upmfgrenoble.wicproject.pdr;
 
+import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Bundle;
+import android.util.Log;
+
+import fr.upmfgrenoble.wicproject.R;
+import fr.upmfgrenoble.wicproject.Utils;
 
 /**
  * Created by Alizée on 07/12/2015.
  */
-public class StepDetectionHandler {
+public class StepDetectionHandler implements SensorEventListener{
 
-    private SensorManager mSensorManager;
-    private Sensor mSensor;
-    private Context context;
+    public StepDetectionHandler(SensorManager sensorManager) {
 
-    public StepDetectionHandler(SensorManager mSensorManager) {
-        super();
     }
 
-    @Override
     public void start(){
-        mSensorManager.registerListener(context, mSensor, mSensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(stepDetectionHandler, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    public void stop(){
+
     }
 
     @Override
-    protected void stop(){
-        mSensorManager.unregisterListener(this);
+    public void onSensorChanged(SensorEvent event) {
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }

@@ -1,5 +1,6 @@
 package fr.upmfgrenoble.wicproject.pdr;
 
+import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.support.v4.app.FragmentActivity;
@@ -17,6 +18,9 @@ import fr.upmfgrenoble.wicproject.R;
 public class CheminParcouruMapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    private SensorManager sensorManager;
+    private Sensor sensor;
+    private StepDetectionHandler stepDetectionHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +30,11 @@ public class CheminParcouruMapsActivity extends FragmentActivity implements OnMa
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(sensor.TYPE_LINEAR_ACCELERATION);
+
+        stepDetectionHandler = new StepDetectionHandler(sensorManager);
     }
 
     /**
@@ -46,6 +55,4 @@ public class CheminParcouruMapsActivity extends FragmentActivity implements OnMa
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
-
-
 }
