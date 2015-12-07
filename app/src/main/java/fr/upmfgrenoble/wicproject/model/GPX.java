@@ -68,7 +68,6 @@ public class GPX extends LinkedList<GPX.Track> {
                     TrackSegment trackSeg = new TrackSegment();
                     track.add(trackSeg);
 
-                    //NodeList trackPointNodes = ((Element) trackNodes.item(j)).getElementsByTagName("trkpt");
                     NodeList trackPointNodes = ((Element) trackSegNodes.item(j)).getElementsByTagName("trkpt");
                     for (int k = 0; k < trackPointNodes.getLength(); ++k) {
 
@@ -100,10 +99,9 @@ public class GPX extends LinkedList<GPX.Track> {
         return outputGPX;
     }
 
+    // Récupération de tous les points de la carte pour le centrage
     public LatLngBounds getLatLngBounds(){
-
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-
         for (Track t:this){
             for(TrackSegment ts:t){
                 for(TrackPoint tp:ts){
@@ -111,8 +109,6 @@ public class GPX extends LinkedList<GPX.Track> {
                 }
             }
         }
-
         return builder.build();
-
     }
 }
