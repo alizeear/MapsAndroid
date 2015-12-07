@@ -16,22 +16,26 @@ import fr.upmfgrenoble.wicproject.Utils;
  * Created by Alizée on 07/12/2015.
  */
 public class StepDetectionHandler implements SensorEventListener{
+    private Sensor sensor;
+    private SensorManager sensorManager;
 
-    public StepDetectionHandler(SensorManager sensorManager) {
-
+    public StepDetectionHandler(SensorManager sm) {
+        sensorManager = sm;
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
     }
 
     public void start(){
-        sensorManager.registerListener(stepDetectionHandler, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+        Log.d(Utils.LOG_TAG,"###########################################");
+        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     public void stop(){
-
+        sensorManager.unregisterListener(this);
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
+        Log.d(Utils.LOG_TAG,event.values[2]+"");
     }
 
     @Override

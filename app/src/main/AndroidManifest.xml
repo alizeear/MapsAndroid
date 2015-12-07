@@ -42,16 +42,20 @@
         <activity
             android:name=".ui.MapsActivity"
             android:label="@string/title_activity_maps" >
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
+
+        <activity android:name="fr.upmfgrenoble.wicproject.pdr.CheminParcouruMapsActivity"
+            android:label="@string/title_activity_chemin_parcouru_maps">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity android:name="fr.upmfgrenoble.wicproject.pdr.CheminParcouruMapsActivity"
-            android:label="@string/title_activity_chemin_parcouru_maps">
-
         </activity>
     </application>
 
