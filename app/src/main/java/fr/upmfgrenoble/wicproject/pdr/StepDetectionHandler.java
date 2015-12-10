@@ -9,15 +9,18 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 import fr.upmfgrenoble.wicproject.R;
 import fr.upmfgrenoble.wicproject.Utils;
 
-/**
- * Created by Alizée on 07/12/2015.
- */
 public class StepDetectionHandler implements SensorEventListener{
     private Sensor sensor;
     private SensorManager sensorManager;
+    private boolean overSeuil = false;
+    private float seuil = (float) 3;
+    private int indexPas=0;
+    private ArrayList<Float> pas = new ArrayList<>();
 
     public StepDetectionHandler(SensorManager sm) {
         sensorManager = sm;
@@ -25,21 +28,50 @@ public class StepDetectionHandler implements SensorEventListener{
     }
 
     public void start(){
-        Log.d(Utils.LOG_TAG,"###########################################");
-        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+        Log.d(Utils.LOG_TAG,"StepDetection started ...");
+        sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     public void stop(){
+        Log.d(Utils.LOG_TAG,"StepDetection STOP !");
         sensorManager.unregisterListener(this);
     }
 
     @Override
+    /* On détecte un nouveau pas */
     public void onSensorChanged(SensorEvent event) {
-        Log.d(Utils.LOG_TAG,event.values[2]+"");
-    }
+        pas.add(event.values[2]);
+        if(pas.size()>5){
+            pas.remove(0);
+        }
+        float moy = 0;
+        for (float val: pas) {
+            moy+=val;
+        }
+        moy /=pas.size();
 
+        if(overSeuil) {
+            if(moy<seuil)
+                overSeuil = false;
+        }else{
+            if(moy >=seuil) {
+                stepDetectionListener.onNewStepDetected();
+                overSeuil = true;
+            }
+        }
+    }
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    private StepDetectionListener stepDetectionListener;
+
+    public void setStepDetectionListener(StepDetectionListener listener){
+        stepDetectionListener = listener;
+    }
+
+    public interface StepDetectionListener{
+        public void onNewStepDetected();
     }
 }
