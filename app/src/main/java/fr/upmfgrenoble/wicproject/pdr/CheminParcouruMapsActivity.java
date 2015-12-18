@@ -1,7 +1,6 @@
 package fr.upmfgrenoble.wicproject.pdr;
 
 import android.content.Context;
-import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -25,10 +24,9 @@ public class CheminParcouruMapsActivity extends FragmentActivity implements OnMa
 
     private GoogleMap mMap;
     private SensorManager sensorManager;
-    private Sensor sensor;
     private StepDetectionHandler stepDetectionHandler;
-    private int compteurPas = 0;
-    private TextView compteurView;
+    private DeviceAttitudeHandler deviceAttitudeHandler;
+    private final float TAILLEPAS = (float) 0.8;
 
     public CheminParcouruMapsActivity() {
     }
@@ -43,45 +41,38 @@ public class CheminParcouruMapsActivity extends FragmentActivity implements OnMa
         mapFragment.getMapAsync(this);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         stepDetectionHandler = new StepDetectionHandler(sensorManager);
+        deviceAttitudeHandler = new DeviceAttitudeHandler(sensorManager);
         stepDetectionHandler.setStepDetectionListener(stepListener);
-        compteurView = (TextView) findViewById(R.id.compteur);
-        compteurView.setText(compteurPas+"");
         Button reset = (Button) findViewById(R.id.reset);
-        reset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                compteurPas=0;
-                compteurView.setText(compteurPas+"");
-            }
-        });
     }
     @Override
     protected void onResume() {
         super.onResume();
         stepDetectionHandler.start();
+        deviceAttitudeHandler.start();
     }
     @Override
     protected void onPause() {
         super.onPause();
         stepDetectionHandler.stop();
+        deviceAttitudeHandler.start();
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        LatLng sydney = new LatLng(45.192742, 5.773653);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Nous"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(10));
     }
 
 
     private StepDetectionListener stepListener = new StepDetectionListener() {
         @Override
         public void onNewStepDetected() {
-            compteurPas++;
-            Log.d(Utils.LOG_TAG,compteurPas+"");
-            compteurView.setText(compteurPas+"");
+            double bearing = deviceAttitudeHandler.getBearing();
         }
     };
 }

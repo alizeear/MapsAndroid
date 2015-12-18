@@ -40,23 +40,25 @@ public class StepDetectionHandler implements SensorEventListener{
     @Override
     /* On détecte un nouveau pas */
     public void onSensorChanged(SensorEvent event) {
-        pas.add(event.values[2]);
-        if(pas.size()>5){
-            pas.remove(0);
-        }
-        float moy = 0;
-        for (float val: pas) {
-            moy+=val;
-        }
-        moy /=pas.size();
+        if(event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION){
+            pas.add(event.values[2]);
+            if(pas.size()>5){
+                pas.remove(0);
+            }
+            float moy = 0;
+            for (float val: pas) {
+                moy+=val;
+            }
+            moy /=pas.size();
 
-        if(overSeuil) {
-            if(moy<seuil)
-                overSeuil = false;
-        }else{
-            if(moy >=seuil) {
-                stepDetectionListener.onNewStepDetected();
-                overSeuil = true;
+            if(overSeuil) {
+                if(moy<seuil)
+                    overSeuil = false;
+            }else {
+                if (moy >= seuil) {
+                    stepDetectionListener.onNewStepDetected();
+                    overSeuil = true;
+                }
             }
         }
     }
