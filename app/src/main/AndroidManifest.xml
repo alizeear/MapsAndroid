@@ -49,13 +49,18 @@
             </intent-filter>-->
         </activity>
 
-        <activity android:name="fr.upmfgrenoble.wicproject.pdr.CheminParcouruMapsActivity"
-            android:label="@string/title_activity_chemin_parcouru_maps">
+        <activity android:name="fr.upmfgrenoble.wicproject.ui.AppActivity"
+            android:label="@string/title_activity_app">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name="fr.upmfgrenoble.wicproject.pdr.CheminParcouruMapsActivity"
+            android:label="@string/title_activity_chemin_parcouru_maps">
+
         </activity>
     </application>
 

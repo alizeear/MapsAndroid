@@ -49,4 +49,6 @@ public class DeviceAttitudeHandler implements SensorEventListener {
     public double getBearing() {
         return bearing;
     }
+
+
 }

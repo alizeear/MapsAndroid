@@ -43,7 +43,7 @@ public class CheminParcouruMapsActivity extends FragmentActivity implements OnMa
         stepDetectionHandler = new StepDetectionHandler(sensorManager);
         deviceAttitudeHandler = new DeviceAttitudeHandler(sensorManager);
         stepDetectionHandler.setStepDetectionListener(stepListener);
-        Button reset = (Button) findViewById(R.id.reset);
+//        Button reset = (Button) findViewById(R.id.reset);
     }
     @Override
     protected void onResume() {

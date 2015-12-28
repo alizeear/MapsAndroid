@@ -12,16 +12,21 @@ public class StepPositioningHandler {
         this.mCurrentPosition = mCurrentPosition;
     }
 
-    public LatLng getmCurrentPosition() {
-        return mCurrentPosition;
-    }
-
     public LatLng computeNextStep(float taillePas,float bearing){
         double angDist = taillePas/6371000;
         double lat = Math.toRadians(mCurrentPosition.latitude);
         double lng = Math.toRadians(mCurrentPosition.longitude);
         double newLat = Math.asin(Math.sin(lat) * Math.cos(angDist) + Math.cos(lat) * Math.sin(angDist) * Math.cos(bearing));
         double newLng = lng + Math.atan2(Math.sin(bearing) * Math.sin(angDist) * Math.cos(lat), Math.cos(angDist) - Math.sin(lat)*Math.sin(newLat) );
-        return new LatLng(Math.toDegrees(newLat),Math.toDegrees(newLng));
+        mCurrentPosition = new LatLng(Math.toDegrees(newLat),Math.toDegrees(newLng));
+        return mCurrentPosition;
+    }
+
+    public LatLng getmCurrentPosition() {
+        return mCurrentPosition;
+    }
+
+    public void setmCurrentPosition(LatLng mCurrentPosition) {
+        this.mCurrentPosition = mCurrentPosition;
     }
 }
