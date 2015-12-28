@@ -4,20 +4,16 @@ import android.content.Context;
 import android.hardware.SensorManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import fr.upmfgrenoble.wicproject.R;
-import fr.upmfgrenoble.wicproject.Utils;
 import fr.upmfgrenoble.wicproject.pdr.DeviceAttitudeHandler;
 import fr.upmfgrenoble.wicproject.pdr.StepDetectionHandler;
 import fr.upmfgrenoble.wicproject.pdr.StepPositioningHandler;
@@ -34,13 +30,12 @@ public class AppActivity extends FragmentActivity implements OnMapReadyCallback 
     private StepDetectionHandler stepDetectionHandler;
     private DeviceAttitudeHandler deviceAttitudeHandler;
     private final float TAILLEPAS = (float) 0.4;
-    private boolean tracing = false;
+    private boolean tracing = false; // une trace est en cours ou non
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -65,6 +60,7 @@ public class AppActivity extends FragmentActivity implements OnMapReadyCallback 
     }
 
     private StepDetectionHandler.StepDetectionListener stepListener = new StepDetectionHandler.StepDetectionListener() {
+        // quand un nouveau pas est détecté, on récupère l'angle puis on créé un nouveau point pour faire avancer la trace
         @Override
         public void onNewStepDetected() {
             double bearing = deviceAttitudeHandler.getBearing();
@@ -74,36 +70,30 @@ public class AppActivity extends FragmentActivity implements OnMapReadyCallback 
         }
     };
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(20));
+        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID); // vu satelitte de la map
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(20)); // on zoom pour un meilleur confort au départ
+
+        // centre la map sur un point pour ne pas trop cherche pour les tests
         LatLng maison = new LatLng(45.594757, 5.872533);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(maison));
 
-
         mGoogleMapTracer = new GoogleMapTracer(mMap, deviceAttitudeHandler);
-        mStepPositioningHandler = new StepPositioningHandler(null);
+        mStepPositioningHandler = new StepPositioningHandler(null); // on défini une position initiale null pour ne pas avoir de point/marker avant un click de l'user
 
         mOnMapClickListener = new GoogleMap.OnMapClickListener() {
             @Override
-            public void onMapClick(LatLng latLng) {
+            public void onMapClick(LatLng latLng) { // au clic sur la map
+                // si une trace est en cours, on la stop, on ajoute un drapeau de fin et on affiche une bulle d'information
                 if(tracing){
                     tracing = false;
                     mGoogleMapTracer.endSegment();
                     Toast toast = Toast.makeText(AppActivity.this, "Fin du segment", Toast.LENGTH_SHORT);
                     toast.show();
                 }else{
+                    // si aucune trace n'est en cours de création, on la démarre avec un drapeau de départ, un nouveau point et un message d'information
                     tracing = true;
                     if(mStepPositioningHandler.getmCurrentPosition() == null){
                         mStepPositioningHandler.setmCurrentPosition(latLng);
@@ -118,8 +108,8 @@ public class AppActivity extends FragmentActivity implements OnMapReadyCallback 
         mMap.setOnMapClickListener(mOnMapClickListener);
     }
 
+    // au clic sur le bouton d'export en haut à droite de la map on lance la fonction de création du fichier et de téléchargement, puis on affiche une bulle d'infotmaition
     public void export(View view){
-
         mGoogleMapTracer.exportToXML("tracks2.gpx");
 
         Toast toast = Toast.makeText(AppActivity.this, "Fichier exporté dans les téléchargement", Toast.LENGTH_SHORT);

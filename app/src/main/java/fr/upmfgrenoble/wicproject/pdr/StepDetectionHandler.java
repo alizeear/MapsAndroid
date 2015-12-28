@@ -1,17 +1,13 @@
 package fr.upmfgrenoble.wicproject.pdr;
 
-import android.app.Activity;
-import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Bundle;
 import android.util.Log;
 
 import java.util.ArrayList;
 
-import fr.upmfgrenoble.wicproject.R;
 import fr.upmfgrenoble.wicproject.Utils;
 
 public class StepDetectionHandler implements SensorEventListener{
@@ -19,7 +15,6 @@ public class StepDetectionHandler implements SensorEventListener{
     private SensorManager sensorManager;
     private boolean overSeuil = false;
     private float seuil = (float) 3;
-    private int indexPas=0;
     private ArrayList<Float> pas = new ArrayList<>();
 
     public StepDetectionHandler(SensorManager sm) {
@@ -38,24 +33,24 @@ public class StepDetectionHandler implements SensorEventListener{
     }
 
     @Override
-    /* On détecte un nouveau pas */
+    // On détecte un nouveau pas grâce à l'accéléromètre linéaire, le seuil est fixé plus haut à 3 (test pour le déduire grâce à l'application Sensor Kinetics)
     public void onSensorChanged(SensorEvent event) {
         if(event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION){
             pas.add(event.values[2]);
-            if(pas.size()>5){
+            if(pas.size()>5){ // si une valeur de movement est supérieur à 5 on considère que le mouvement est trop grand, c'est peut-être une erreur de l'utilisateur, on ne le prend pas en compte
                 pas.remove(0);
             }
             float moy = 0;
             for (float val: pas) {
                 moy+=val;
             }
-            moy /=pas.size();
+            moy /= pas.size();
 
             if(overSeuil) {
-                if(moy<seuil)
+                if(moy < seuil)
                     overSeuil = false;
-            }else {
-                if (moy >= seuil) {
+            } else {
+                if (moy >= seuil) { // si la valeur de mouvement est supérieur ou égale au pas alors on en déduit qu'un nouveau pas à été effectué
                     stepDetectionListener.onNewStepDetected();
                     overSeuil = true;
                 }

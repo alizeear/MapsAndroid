@@ -23,9 +23,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import fr.upmfgrenoble.wicproject.Utils;
 
-/**
- * Created by thibaud on 04/11/15.
- */
 public class GPX extends LinkedList<GPX.Track> {
 
     public static class Track extends LinkedList<TrackSegment> {
@@ -99,7 +96,7 @@ public class GPX extends LinkedList<GPX.Track> {
         return outputGPX;
     }
 
-    // Récupération de tous les points de la carte pour le centrage
+    // Récupération de tous les points de la carte pour le centrer la trace au milieu de la carte
     public LatLngBounds getLatLngBounds(){
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (Track t:this){
