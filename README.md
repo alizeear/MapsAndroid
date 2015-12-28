@@ -1,3 +1,3 @@
 # MapsAndroid
 
-Student project
+Student project: Pedestrian Dead Reckoning for Android
