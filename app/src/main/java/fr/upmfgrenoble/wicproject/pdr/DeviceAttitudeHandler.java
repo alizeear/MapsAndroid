@@ -38,6 +38,7 @@ public class DeviceAttitudeHandler implements SensorEventListener {
             SensorManager.getRotationMatrixFromVector(rotMat, event.values);
             double  yaw = SensorManager.getOrientation(rotMat,values)[0];
             bearing = yaw;
+            deviceAttitudeListener.rotationChanged(bearing);
         }
     }
 
@@ -50,5 +51,13 @@ public class DeviceAttitudeHandler implements SensorEventListener {
         return bearing;
     }
 
+    private DeviceAttitudeListener deviceAttitudeListener;
 
+    public void setDeviceAttitudeListener(DeviceAttitudeListener deviceAttitudeListener) {
+        this.deviceAttitudeListener = deviceAttitudeListener;
+    }
+
+    public interface DeviceAttitudeListener{
+        public void rotationChanged(double angle);
+    }
 }

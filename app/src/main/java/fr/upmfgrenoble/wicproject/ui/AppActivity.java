@@ -5,7 +5,10 @@ import android.hardware.SensorManager;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -84,27 +87,42 @@ public class AppActivity extends FragmentActivity implements OnMapReadyCallback 
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(20));
         LatLng maison = new LatLng(45.594757, 5.872533);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(maison));
 
-        mGoogleMapTracer = new GoogleMapTracer(mMap);
-        mStepPositioningHandler = new StepPositioningHandler(maison);
-        tracing = true;
-        mGoogleMapTracer.newSegment();
-        mGoogleMapTracer.newPoint(mStepPositioningHandler.getmCurrentPosition());
+
+        mGoogleMapTracer = new GoogleMapTracer(mMap, deviceAttitudeHandler);
+        mStepPositioningHandler = new StepPositioningHandler(null);
 
         mOnMapClickListener = new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
                 if(tracing){
                     tracing = false;
+                    mGoogleMapTracer.endSegment();
+                    Toast toast = Toast.makeText(AppActivity.this, "Fin du segment", Toast.LENGTH_SHORT);
+                    toast.show();
                 }else{
                     tracing = true;
+                    if(mStepPositioningHandler.getmCurrentPosition() == null){
+                        mStepPositioningHandler.setmCurrentPosition(latLng);
+                    }
+                    Toast toast = Toast.makeText(AppActivity.this, "Début du segment", Toast.LENGTH_SHORT);
+                    toast.show();
                     mGoogleMapTracer.newSegment();
                     mGoogleMapTracer.newPoint(mStepPositioningHandler.getmCurrentPosition());
                 }
             }
         };
         mMap.setOnMapClickListener(mOnMapClickListener);
+    }
+
+    public void export(View view){
+
+        mGoogleMapTracer.exportToXML("tracks2.gpx");
+
+        Toast toast = Toast.makeText(AppActivity.this, "Fichier exporté dans les téléchargement", Toast.LENGTH_SHORT);
+        toast.show();
     }
 }
